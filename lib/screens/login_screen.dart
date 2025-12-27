@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:smart_grocery/screens/home_screen.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_typography.dart';
+
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -9,12 +12,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class LoginScreenState extends State<LoginScreen> {
-  // Tab colors
-  Color fcolor1 = Colors.white;        // Sign In text
-  Color bgcolor1 = const Color(0xFF2E7D32); // Sign In bg (active by default)
-
-  Color fcolor2 = Colors.grey.shade200; // Sign Up text
-  Color bgcolor2 = Colors.grey.shade300; // Sign Up bg
 
   // true = Sign In active, false = Sign Up active
   bool isSignInActive = true;
@@ -26,7 +23,6 @@ class LoginScreenState extends State<LoginScreen> {
   final TextEditingController signUpNameController = TextEditingController();
   final TextEditingController signUpEmailController = TextEditingController();
   final TextEditingController signUpPasswordController = TextEditingController();
-  final TextEditingController signUpReferralCodeController = TextEditingController();
 
 
 
@@ -37,7 +33,6 @@ class LoginScreenState extends State<LoginScreen> {
     signUpNameController.dispose();
     signUpEmailController.dispose();
     signUpPasswordController.dispose();
-    signUpReferralCodeController.dispose();
     super.dispose();
   }
 
@@ -45,10 +40,6 @@ class LoginScreenState extends State<LoginScreen> {
   void switchToSignIn() {
     setState(() {
       isSignInActive = true;
-      fcolor1 = Colors.white;
-      bgcolor1 = const Color(0xFF2E7D32);
-      fcolor2 = Colors.grey.shade200;
-      bgcolor2 = Colors.grey.shade300;
     });
   }
 
@@ -56,10 +47,6 @@ class LoginScreenState extends State<LoginScreen> {
   void switchToSignUp() {
     setState(() {
       isSignInActive = false;
-      fcolor2 = Colors.white;
-      bgcolor2 = const Color(0xFF2E7D32);
-      fcolor1 = Colors.grey.shade200;
-      bgcolor1 = Colors.grey.shade300;
     });
   }
 
@@ -70,17 +57,7 @@ class LoginScreenState extends State<LoginScreen> {
         child: Container(
           width: 360,
           height: 780,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0xFF1B5E20),
-                Color(0xFF2E7D32),
-                Color(0xFF43A047),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
+          color: AppColors.surface,
           child: Column(
             children: [
               // Logo
@@ -100,12 +77,7 @@ class LoginScreenState extends State<LoginScreen> {
               // Title
               const Text(
                 'SmartGrocery',
-                style: TextStyle(
-                  color: Color(0xFFFFF8F0),
-                  fontSize: 31,
-                  fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic,
-                ),
+                style: AppTextStyles.appTitle,
               ),
 
               const SizedBox(height: 12),
@@ -117,8 +89,8 @@ class LoginScreenState extends State<LoginScreen> {
                   width: 300,
                   height: 470,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFBEFEF),
-                    borderRadius: BorderRadius.circular(25),
+                    color: AppColors.card,
+                    borderRadius: BorderRadius.circular(14),
                   ),
                   child: Column(
                     children: [
@@ -130,55 +102,73 @@ class LoginScreenState extends State<LoginScreen> {
                           height: 50,
                           decoration: BoxDecoration(
                             color: Colors.grey.shade300,
-                            borderRadius: BorderRadius.circular(25),
+                            borderRadius: BorderRadius.circular(14),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          child: Stack(
                             children: [
-                              // Sign In Tab
-                              InkWell(
-                                onTap: switchToSignIn,
-                                child: Container(
-                                  width: 100,
-                                  height: 38,
-                                  decoration: BoxDecoration(
-                                    color: bgcolor1,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      'Sign In',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w900,
-                                        fontSize: 16,
-                                        color: fcolor1,
-                                      ),
+                              // 🟢 Sliding green highlight
+                              AnimatedAlign(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                                alignment:
+                                isSignInActive ? Alignment.centerLeft : Alignment.centerRight,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                                  child: Container(
+                                    width: 100,
+                                    height: 38,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary,
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
                                   ),
                                 ),
                               ),
 
-                              // Sign Up Tab
-                              InkWell(
-                                onTap: switchToSignUp,
-                                child: Container(
-                                  width: 100,
-                                  height: 38,
-                                  decoration: BoxDecoration(
-                                    color: bgcolor2,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      'Sign Up',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w900,
-                                        fontSize: 16,
-                                        color: fcolor2,
+                              // Tabs text layer
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  // Sign In
+                                  Expanded(
+                                    child: InkWell(
+                                      onTap: switchToSignIn,
+                                      child: Center(
+                                        child: Text(
+                                          'Sign In',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16,
+                                            color: isSignInActive
+                                                ? Colors.white
+                                                :  AppColors.textPrimary.withAlpha(153),
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
+
+                                  // Sign Up
+                                  Expanded(
+                                    child: InkWell(
+                                      onTap: switchToSignUp,
+                                      child: Center(
+                                        child: Text(
+                                          'Sign Up',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16,
+                                            color: !isSignInActive
+                                                ? Colors.white
+                                                :  AppColors.textPrimary.withAlpha(153),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -220,13 +210,13 @@ class LoginScreenState extends State<LoginScreen> {
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(22),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
+                  borderSide: BorderSide(color: AppColors.subtleCard),
                 ),
-                label: const Text(
+                label: Text(
                   'Email',
-                  style: TextStyle(fontSize: 15, color: Colors.black54, fontWeight: FontWeight.w700),
+                  style: TextStyle(fontSize: 15, color: AppColors.textPrimary.withAlpha(178), fontWeight: FontWeight.w700),
                 ),
-                prefixIcon: const Icon(Icons.email_outlined, size: 20, color: Colors.black54),
+                prefixIcon:Icon(Icons.email_outlined, size: 20, color: AppColors.textPrimary.withAlpha(153)),
               ),
             ),
           ),
@@ -242,13 +232,13 @@ class LoginScreenState extends State<LoginScreen> {
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(22),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
+                  borderSide: BorderSide(color: AppColors.subtleCard),
                 ),
-                label: const Text(
+                label: Text(
                   'Password',
-                  style: TextStyle(fontSize: 15, color: Colors.black54, fontWeight: FontWeight.w700),
+                  style: TextStyle(fontSize: 15, color: AppColors.textPrimary.withAlpha(178), fontWeight: FontWeight.w700),
                 ),
-                prefixIcon: const Icon(Icons.lock_outline, size: 20, color: Colors.black54),
+                prefixIcon: Icon(Icons.lock_outline, size: 20, color: AppColors.textPrimary.withAlpha(153)),
               ),
             ),
           ),
@@ -264,7 +254,7 @@ class LoginScreenState extends State<LoginScreen> {
                 },
                 child: const Text(
                   'Forgot Password?',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.red),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppColors.highlight),
                 ),
               ),
             ),
@@ -275,18 +265,21 @@ class LoginScreenState extends State<LoginScreen> {
           // Login Button
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2E7D32),
-              elevation: 10,
+              backgroundColor: AppColors.accent, // Mango Pop
+              foregroundColor: Colors.white,
+              elevation: 0,
               minimumSize: const Size(150, 50),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
             ),
             onPressed: () {
               // Login logic
 
             },
-            child: const Text(
+            child: Text(
               'Login',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFFFFF8F0)),
+              style: AppTextStyles.button,
             ),
           ),
 
@@ -304,7 +297,7 @@ class LoginScreenState extends State<LoginScreen> {
                 onTap: switchToSignUp,
                 child: const Text(
                   'Sign Up',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.blueAccent),
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600,color: AppColors.info),
                 ),
               ),
             ],
@@ -321,7 +314,7 @@ class LoginScreenState extends State<LoginScreen> {
             children: [
               IconButton(
                 onPressed: () {},
-                icon: const FaIcon(FontAwesomeIcons.google, size: 22, color: Colors.red),
+                icon: FaIcon(FontAwesomeIcons.google, size: 22, color: AppColors.textPrimary.withAlpha(153)),
               ),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12.0),
@@ -329,7 +322,7 @@ class LoginScreenState extends State<LoginScreen> {
               ),
               IconButton(
                 onPressed: () {},
-                icon: const FaIcon(FontAwesomeIcons.facebook, size: 22, color: Colors.blue),
+                icon: FaIcon(FontAwesomeIcons.facebook, size: 22,color: AppColors.textPrimary.withAlpha(153)),
               ),
             ],
           ),
@@ -359,7 +352,7 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
                 label: const Text(
                   'Name',
-                  style: TextStyle(fontSize: 15, color: Colors.black54, fontWeight: FontWeight.w700),
+                  style: AppTextStyles.body,
                 ),
                 prefixIcon: const Icon(Icons.person, size: 20, color: Colors.black54),
               ),
@@ -381,7 +374,7 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
                 label: const Text(
                   'Email',
-                  style: TextStyle(fontSize: 15, color: Colors.black54, fontWeight: FontWeight.w700),
+                  style: AppTextStyles.body,
                 ),
                 prefixIcon: const Icon(Icons.email_outlined, size: 20, color: Colors.black54),
               ),
@@ -403,7 +396,7 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
                 label: const Text(
                   'Password',
-                  style: TextStyle(fontSize: 15, color: Colors.black54, fontWeight: FontWeight.w700),
+                  style: AppTextStyles.body,
                 ),
                 prefixIcon: const Icon(Icons.lock_outline, size: 20, color: Colors.black54),
               ),
@@ -412,34 +405,19 @@ class LoginScreenState extends State<LoginScreen> {
 
           const SizedBox(height: 15),
 
-          // Referral Code (Optional)
-          SizedBox(
-            width: 270,
-            child: TextField(
-              controller: signUpReferralCodeController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(22),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                label: const Text(
-                  'Referral Code (Optional)',
-                  style: TextStyle(fontSize: 13, color: Colors.black54),
-                ),
-                prefixIcon: const Icon(Icons.card_giftcard, size: 20, color: Colors.black54),
-              ),
-            ),
-          ),
 
           const SizedBox(height: 20),
 
           // Sign Up Button
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2E7D32),
-              elevation: 10,
+              backgroundColor: AppColors.accent, // Mango Pop
+              foregroundColor: Colors.white,
+              elevation: 0,
               minimumSize: const Size(150, 50),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
             ),
             onPressed: () {
               // Sign up logic
@@ -464,7 +442,7 @@ class LoginScreenState extends State<LoginScreen> {
                 onTap: switchToSignIn,
                 child: const Text(
                   'Sign In',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.blueAccent),
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.info),
                 ),
               ),
             ],
@@ -476,6 +454,3 @@ class LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
-
-
