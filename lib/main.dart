@@ -1,9 +1,12 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:smart_grocery/screens/home_screen.dart';
 import 'package:smart_grocery/screens/login_screen.dart';
 import 'package:smart_grocery/screens/splash_screen.dart';
+import 'theme/app_colors.dart';
 
 
 
@@ -11,6 +14,7 @@ import 'package:smart_grocery/screens/splash_screen.dart';
 Color(0xFFFFE8D6),
  Color(0xFFFFF8F0), // Cream
               Color(0xFFFFE8D6),*/
+
 
 
 void main()  {
@@ -28,11 +32,32 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: ThemeData(
-
-        colorScheme: .fromSeed(seedColor: Colors.lightGreenAccent),
+      theme:ThemeData(
+        scaffoldBackgroundColor: AppColors.surface,
+        fontFamily: 'Inter', // default body font
+        colorScheme: ColorScheme.light(
+          primary: AppColors.primary,
+          secondary: AppColors.accent,
+          surface: AppColors.surface,
+        ),
+        textTheme: const TextTheme(
+          bodyMedium: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 14,
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.accent,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            elevation: 0,
+          ),
+        ),
       ),
-      home:  MyHomePage(),
+      home:  LoginScreen(),
     );
   }
 }
