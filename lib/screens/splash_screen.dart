@@ -1,63 +1,46 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:smart_grocery/screens/home_screen.dart';
-import 'package:smart_grocery/screens/login_screen.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_typography.dart';
+import 'login_screen.dart';
 
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({Key? key}) : super(key: key);
 
-class SplashScreen extends StatefulWidget{
   @override
-  State<SplashScreen> createState() => SplashScreenState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
-class SplashScreenState extends State<SplashScreen>
+
+class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<Offset> _logoAnimation;
-  late List<Animation<Offset>> _featureAnimations;
+  late Animation<double> _scale;
+  late Animation<double> _opacity;
 
   @override
   void initState() {
     super.initState();
 
-
-    // Animation controller for 5 seconds total
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 5),
+      duration: const Duration(milliseconds: 900),
     );
 
-    // Logo fades/slides in quickly at the start
-    _logoAnimation = Tween<Offset>(
-      begin: const Offset(0, -0.5),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: const Interval(0.0, 0.3, curve: Curves.easeOut),
-    ));
+    _scale = Tween<double>(begin: 0.96, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
 
-    // Four features slide up staggered
-    _featureAnimations = List.generate(4, (index) {
-      return Tween<Offset>(
-        begin: const Offset(0, 1.0), // Start from bottom
-        end: Offset.zero,
-      ).animate(CurvedAnimation(
-        parent: _controller,
-        curve: Interval(
-          0.3 + index * 0.15, // Start after logo, delay each by 0.15s
-          0.8 + index * 0.05, // Finish quickly
-          curve: Curves.easeOutBack,
-        ),
-      ));
-    });
+    _opacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
 
-    // Start the animation
     _controller.forward();
 
-    // Navigate to home after ~6 seconds
-    Timer(const Duration(seconds: 6), () {
+    Timer(const Duration(milliseconds: 1800), () {
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => LoginScreen()),
+          MaterialPageRoute(builder: (_) => LoginScreen()),
         );
       }
     });
@@ -72,134 +55,80 @@ class SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.surface,
       body: Center(
-        child: Container(
-          width: 360,
-          height: 780,
-          color: const Color(0xFFFFF9F7),
-          child: Column(
-            children: [
-              // Logo and titles (animated slightly)
-              SlideTransition(
-                position: _logoAnimation,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 65.0),
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFE8D6),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        'assets/img/IMG_2.jpg',
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.cover,
+        child: FadeTransition(
+          opacity: _opacity,
+          child: ScaleTransition(
+            scale: _scale,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Logo
+                Container(
+                  width: 88,
+                  height: 88,
+                  decoration: BoxDecoration(
+                    color: AppColors.card,
+                    borderRadius: BorderRadius.circular(22),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withAlpha(25),
+                        blurRadius: 16,
+                        offset: const Offset(0, 8),
                       ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(22),
+                    child: Image.asset(
+                      'assets/img/IMG_2.jpg',
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
-              ),
 
-              SlideTransition(
-                position: _logoAnimation,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
-                  child: const Text(
-                    'SmartGrocery',
-                    style: TextStyle(
-                      fontSize: 31,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
-                    ),
+                const SizedBox(height: 28),
+
+                // App Name
+                const Text(
+                  'SmartGrocery',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 26,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
                   ),
                 ),
-              ),
 
-              SlideTransition(
-                position: _logoAnimation,
-                child: const Text(
-                  'Your smart kitchen companion\nfor zero waste living',
-                  textAlign: TextAlign.center,
+                const SizedBox(height: 6),
+
+                // Tagline
+                Text(
+                  'Smarter kitchens. Less waste.',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 14,
+                    color: AppColors.textPrimary.withAlpha(150),
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 24),
 
-              // Feature 1
-              SlideTransition(
-                position: _featureAnimations[0],
-                child: _buildFeatureContainer(
-                  icon: Icons.camera_alt_rounded,
-                  text: 'Scan receipts instantly with AI',
+                // Brand accent
+                Container(
+                  width: 48,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.accent,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-              ),
-
-              // Feature 2
-              SlideTransition(
-                position: _featureAnimations[1],
-                child: _buildFeatureContainer(
-                  icon: Icons.notifications_active_rounded,
-                  text: 'Get alerts before items expire',
-                ),
-              ),
-
-              // Feature 3
-              SlideTransition(
-                position: _featureAnimations[2],
-                child: _buildFeatureContainer(
-                  icon: Icons.people_rounded,
-                  text: 'Share inventory with Family',
-                ),
-              ),
-
-              // Feature 4
-              SlideTransition(
-                position: _featureAnimations[3],
-                child: _buildFeatureContainer(
-                  icon: Icons.restaurant_menu_rounded,
-                  text: 'Smart recipe suggestions',
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
-
-  Widget _buildFeatureContainer({required IconData icon, required String text}) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 20.0),
-      child: Container(
-        width: 300,
-        height: 55,
-        decoration: BoxDecoration(
-          color: const Color(0xFFFFE8D6),
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 12.0, right: 8.0),
-              child: Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: Colors.orangeAccent,
-                  borderRadius: BorderRadius.circular(7),
-                ),
-                child: Icon(icon, color: Colors.black54),
-              ),
-            ),
-            Text(text, style: const TextStyle(fontSize: 16)),
-          ],
-        ),
-      ),
-    );
-  }
 }
-
